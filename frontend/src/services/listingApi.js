@@ -116,7 +116,6 @@ export const listingApi = {
       return { success: false, error: error.message };
     }
   },
-
   // Delete listing from API
   delete: async (id) => {
     try {
@@ -131,6 +130,95 @@ export const listingApi = {
       // Log error to console for debugging
       console.error("Delete listing error:", error);
       // Return error response with message
+      return { success: false, error: error.message };
+    }
+  },
+
+  // Upload image for listing
+  uploadImage: async (file) => {
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append("image", file);
+
+      // Get auth headers (remove Content-Type to let browser set it for multipart/form-data)
+      const token = localStorage.getItem("token");
+      const headers = {
+        Authorization: token ? `Bearer ${token}` : "",
+      };
+
+      // Make POST request to image upload endpoint
+      const response = await axios.post(
+        `${API_BASE_URL}/upload-image`,
+        formData,
+        { headers }
+      );
+
+      // Return success response with image URL/path
+      return { success: true, data: response.data };
+    } catch (error) {
+      // Log error to console for debugging
+      console.error("Upload image error:", error);
+      // Return error response with message
+      return { success: false, error: error.message };
+    }
+  },
+
+  // Create listing with images
+  createWithImages: async (listingData, imageFiles) => {
+    try {
+      // First upload images if any
+      const imageUrls = [];
+      if (imageFiles && imageFiles.length > 0) {
+        for (const file of imageFiles) {
+          const uploadResult = await listingApi.uploadImage(file);
+          if (uploadResult.success) {
+            imageUrls.push(uploadResult.data.url || uploadResult.data.path);
+          }
+        }
+      }
+
+      // Add images to listing data
+      const listingWithImages = {
+        ...listingData,
+        images: imageUrls,
+      };
+
+      // Create listing with image URLs
+      return await listingApi.create(listingWithImages);
+    } catch (error) {
+      console.error("Create listing with images error:", error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  // Update listing with new images
+  updateWithImages: async (id, listingData, imageFiles) => {
+    try {
+      // First upload new images if any
+      const newImageUrls = [];
+      if (imageFiles && imageFiles.length > 0) {
+        for (const file of imageFiles) {
+          const uploadResult = await listingApi.uploadImage(file);
+          if (uploadResult.success) {
+            newImageUrls.push(uploadResult.data.url || uploadResult.data.path);
+          }
+        }
+      }
+
+      // Merge existing images with new ones
+      const existingImages = listingData.images || [];
+      const allImages = [...existingImages, ...newImageUrls];
+
+      // Update listing with all images
+      const listingWithImages = {
+        ...listingData,
+        images: allImages,
+      };
+
+      return await listingApi.update(id, listingWithImages);
+    } catch (error) {
+      console.error("Update listing with images error:", error);
       return { success: false, error: error.message };
     }
   },

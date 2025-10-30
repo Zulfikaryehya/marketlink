@@ -15,6 +15,8 @@ const CreateListingPage = () => {
     category: "",
     condition: "new",
   });
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   // Redirect if not authenticated
   if (!isAuthenticated) {
@@ -37,7 +39,6 @@ const CreateListingPage = () => {
       </div>
     );
   }
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -46,15 +47,48 @@ const CreateListingPage = () => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    setSelectedImages(files);
+
+    // Create preview URLs
+    const previews = files.map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+      name: file.name,
+    }));
+    setImagePreviews(previews);
+  };
+
+  const removeImage = (index) => {
+    const newImages = [...selectedImages];
+    const newPreviews = [...imagePreviews];
+
+    // Revoke the URL to prevent memory leaks
+    URL.revokeObjectURL(newPreviews[index].url);
+
+    newImages.splice(index, 1);
+    newPreviews.splice(index, 1);
+
+    setSelectedImages(newImages);
+    setImagePreviews(newPreviews);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      const result = await listingApi.create(formData);
+      // Use createWithImages if images are selected, otherwise use regular create
+      const result =
+        selectedImages.length > 0
+          ? await listingApi.createWithImages(formData, selectedImages)
+          : await listingApi.create(formData);
+
       if (result.success) {
         alert("Listing created successfully!");
+        // Clean up image previews
+        imagePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
         navigate("/listings");
       } else {
         setError(result.error);
@@ -233,12 +267,108 @@ const CreateListingPage = () => {
               borderRadius: "5px",
             }}
           >
+            {" "}
             <option value="new">New</option>
             <option value="like-new">Like New</option>
             <option value="good">Good</option>
             <option value="fair">Fair</option>
             <option value="poor">Poor</option>
           </select>
+        </div>
+
+        {/* Image Upload Section */}
+        <div>
+          <label
+            style={{
+              display: "block",
+              marginBottom: "5px",
+              fontWeight: "bold",
+            }}
+          >
+            📸 Images (Optional)
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImageChange}
+            style={{
+              width: "100%",
+              padding: "10px",
+              border: "1px solid #ddd",
+              borderRadius: "5px",
+              backgroundColor: "#f8f9fa",
+            }}
+          />
+          <p style={{ fontSize: "12px", color: "#666", margin: "5px 0" }}>
+            Select multiple images (JPG, PNG, etc.) - Max 5 images recommended
+          </p>
+
+          {/* Image Previews */}
+          {imagePreviews.length > 0 && (
+            <div style={{ marginTop: "10px" }}>
+              <h4 style={{ margin: "10px 0 5px 0" }}>Image Previews:</h4>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+                  gap: "10px",
+                }}
+              >
+                {imagePreviews.map((preview, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      position: "relative",
+                      border: "1px solid #ddd",
+                      borderRadius: "5px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <img
+                      src={preview.url}
+                      alt={`Preview ${index + 1}`}
+                      style={{
+                        width: "100%",
+                        height: "120px",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      style={{
+                        position: "absolute",
+                        top: "5px",
+                        right: "5px",
+                        backgroundColor: "#dc3545",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "25px",
+                        height: "25px",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      ×
+                    </button>
+                    <div
+                      style={{
+                        padding: "5px",
+                        fontSize: "10px",
+                        backgroundColor: "#f8f9fa",
+                      }}
+                    >
+                      {preview.name.length > 15
+                        ? preview.name.substring(0, 15) + "..."
+                        : preview.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>

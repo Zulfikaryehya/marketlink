@@ -16,7 +16,11 @@ const EditListingPage = () => {
     price: "",
     category: "",
     condition: "new",
+    images: [],
   });
+  const [newImages, setNewImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchListing();
@@ -57,6 +61,7 @@ const EditListingPage = () => {
           price: listing.price || "",
           category: listing.category || "",
           condition: listing.condition || "new",
+          images: listing.images || [],
         });
         setError(null);
       } else {
@@ -68,7 +73,6 @@ const EditListingPage = () => {
       setLoading(false);
     }
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -77,15 +81,58 @@ const EditListingPage = () => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    setNewImages(files);
+
+    // Create preview URLs for new images
+    const previews = files.map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+      name: file.name,
+      isNew: true,
+    }));
+    setImagePreviews(previews);
+  };
+
+  const removeExistingImage = (index) => {
+    const newImages = [...formData.images];
+    newImages.splice(index, 1);
+    setFormData((prev) => ({
+      ...prev,
+      images: newImages,
+    }));
+  };
+
+  const removeNewImage = (index) => {
+    const newImagesList = [...newImages];
+    const newPreviews = [...imagePreviews];
+
+    // Revoke the URL to prevent memory leaks
+    URL.revokeObjectURL(newPreviews[index].url);
+
+    newImagesList.splice(index, 1);
+    newPreviews.splice(index, 1);
+
+    setNewImages(newImagesList);
+    setImagePreviews(newPreviews);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
 
     try {
-      const result = await listingApi.update(id, formData);
+      // Use updateWithImages if new images are selected, otherwise use regular update
+      const result =
+        newImages.length > 0
+          ? await listingApi.updateWithImages(id, formData, newImages)
+          : await listingApi.update(id, formData);
+
       if (result.success) {
         alert("Listing updated successfully!");
+        // Clean up image previews
+        imagePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
         navigate(`/listings/${id}`);
       } else {
         setError(result.error);
@@ -307,12 +354,176 @@ const EditListingPage = () => {
               borderRadius: "5px",
             }}
           >
+            {" "}
             <option value="new">New</option>
             <option value="like-new">Like New</option>
             <option value="good">Good</option>
             <option value="fair">Fair</option>
             <option value="poor">Poor</option>
           </select>
+        </div>
+
+        {/* Image Management Section */}
+        <div>
+          <label
+            style={{
+              display: "block",
+              marginBottom: "10px",
+              fontWeight: "bold",
+            }}
+          >
+            📸 Manage Images
+          </label>
+
+          {/* Existing Images */}
+          {formData.images && formData.images.length > 0 && (
+            <div style={{ marginBottom: "15px" }}>
+              <h4 style={{ margin: "0 0 10px 0" }}>Current Images:</h4>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+                  gap: "10px",
+                }}
+              >
+                {formData.images.map((image, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      position: "relative",
+                      border: "1px solid #ddd",
+                      borderRadius: "5px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <img
+                      src={image}
+                      alt={`Existing ${index + 1}`}
+                      style={{
+                        width: "100%",
+                        height: "120px",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeExistingImage(index)}
+                      style={{
+                        position: "absolute",
+                        top: "5px",
+                        right: "5px",
+                        backgroundColor: "#dc3545",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "25px",
+                        height: "25px",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Add New Images */}
+          <div>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "5px",
+                fontWeight: "normal",
+              }}
+            >
+              Add New Images:
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageChange}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ddd",
+                borderRadius: "5px",
+                backgroundColor: "#f8f9fa",
+              }}
+            />
+            <p style={{ fontSize: "12px", color: "#666", margin: "5px 0" }}>
+              Select new images to add (JPG, PNG, etc.)
+            </p>
+          </div>
+
+          {/* New Image Previews */}
+          {imagePreviews.length > 0 && (
+            <div style={{ marginTop: "10px" }}>
+              <h4 style={{ margin: "10px 0 5px 0" }}>New Images to Add:</h4>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+                  gap: "10px",
+                }}
+              >
+                {imagePreviews.map((preview, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      position: "relative",
+                      border: "1px solid #28a745",
+                      borderRadius: "5px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <img
+                      src={preview.url}
+                      alt={`New Preview ${index + 1}`}
+                      style={{
+                        width: "100%",
+                        height: "120px",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeNewImage(index)}
+                      style={{
+                        position: "absolute",
+                        top: "5px",
+                        right: "5px",
+                        backgroundColor: "#dc3545",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "25px",
+                        height: "25px",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      ×
+                    </button>
+                    <div
+                      style={{
+                        padding: "5px",
+                        fontSize: "10px",
+                        backgroundColor: "#e8f5e8",
+                      }}
+                    >
+                      {preview.name.length > 15
+                        ? preview.name.substring(0, 15) + "..."
+                        : preview.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>

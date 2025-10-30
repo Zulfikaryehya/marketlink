@@ -7,7 +7,6 @@ import ListingsPage from "./pages/ListingsPage";
 import CreateListingPage from "./pages/CreateListingPage";
 import ListingDetailPage from "./pages/ListingDetailPage";
 import EditListingPage from "./pages/EditListingPage";
-import ListingApiTestPage from "./pages/ListingApiTestPage";
 import Layout from "./components/Layout";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -78,14 +77,7 @@ const router = createBrowserRouter([
       </Layout>
     ),
   },
-  {
-    path: "/api-test",
-    element: (
-      <Layout>
-        <ListingApiTestPage />
-      </Layout>
-    ),
-  },
+
   {
     path: "*",
     element: (

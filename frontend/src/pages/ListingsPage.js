@@ -109,11 +109,41 @@ const ListingsPage = () => {
                 backgroundColor: "#f9f9f9",
               }}
             >
+              {" "}
+              {/* Image Display */}
+              {listing.images && listing.images.length > 0 && (
+                <div style={{ marginBottom: "10px" }}>
+                  <img
+                    src={listing.images[0]}
+                    alt={listing.title}
+                    style={{
+                      width: "100%",
+                      height: "200px",
+                      objectFit: "cover",
+                      borderRadius: "5px",
+                      border: "1px solid #ddd",
+                    }}
+                  />
+                  {listing.images.length > 1 && (
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        color: "#666",
+                        margin: "5px 0",
+                      }}
+                    >
+                      +{listing.images.length - 1} more image(s)
+                    </p>
+                  )}
+                </div>
+              )}
               <h3 style={{ margin: "0 0 10px 0", color: "#333" }}>
                 {listing.title}
               </h3>
               <p style={{ margin: "5px 0", color: "#666" }}>
-                {listing.description}
+                {listing.description.length > 100
+                  ? listing.description.substring(0, 100) + "..."
+                  : listing.description}
               </p>
               <p style={{ margin: "5px 0" }}>
                 <strong>Price:</strong> ${listing.price}
@@ -128,7 +158,6 @@ const ListingsPage = () => {
                 <strong>Created:</strong>{" "}
                 {new Date(listing.created_at).toLocaleDateString()}
               </p>
-
               <div style={{ marginTop: "15px", display: "flex", gap: "10px" }}>
                 <button
                   onClick={() => navigate(`/listings/${listing.id}`)}

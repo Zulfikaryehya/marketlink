@@ -123,8 +123,49 @@ const ListingDetailPage = () => {
           backgroundColor: "#f9f9f9",
         }}
       >
+        {" "}
         <h1 style={{ margin: "0 0 20px 0", color: "#333" }}>{listing.title}</h1>
-
+        {/* Image Gallery */}
+        {listing.images && listing.images.length > 0 && (
+          <div style={{ marginBottom: "30px" }}>
+            <h3 style={{ margin: "0 0 15px 0", color: "#555" }}>📸 Images</h3>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                gap: "10px",
+              }}
+            >
+              {listing.images.map((image, index) => (
+                <div
+                  key={index}
+                  style={{
+                    border: "1px solid #ddd",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <img
+                    src={image}
+                    alt={`${listing.title} - Image ${index + 1}`}
+                    style={{
+                      width: "100%",
+                      height: "200px",
+                      objectFit: "cover",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => window.open(image, "_blank")}
+                  />
+                </div>
+              ))}
+            </div>
+            <p
+              style={{ fontSize: "12px", color: "#666", margin: "10px 0 0 0" }}
+            >
+              Click on images to view full size
+            </p>
+          </div>
+        )}
         <div
           style={{
             display: "grid",
@@ -174,7 +215,6 @@ const ListingDetailPage = () => {
             </p>
           </div>
         </div>
-
         <div style={{ marginBottom: "20px" }}>
           <h3 style={{ margin: "0 0 10px 0", color: "#555" }}>
             📝 Description
@@ -190,7 +230,6 @@ const ListingDetailPage = () => {
             {listing.description}
           </p>
         </div>
-
         {/* Action Buttons */}
         {isAuthenticated && (
           <div

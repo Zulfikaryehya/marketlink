@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ListingController;
+use App\Http\Controllers\ImageUploadController;
 
 Route::group([
     'middleware' => 'api',
@@ -22,3 +23,8 @@ Route::apiResource('listings', ListingController::class)->middleware('auth:api')
 // Route::get('/listings/{listing}', [ListingController::class, 'show']); // GET single listing
 // Route::put('/listings/{listing}', [ListingController::class, 'update']); // PUT update listing
 // Route::delete('/listings/{listing}', [ListingController::class, 'destroy']); // DELETE listing
+
+
+
+
+Route::post('/upload-image', [ImageUploadController::class, 'upload']);
