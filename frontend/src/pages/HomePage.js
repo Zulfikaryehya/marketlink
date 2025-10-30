@@ -1,12 +1,11 @@
 import React from "react";
-import NavBar from "../components/NavBar";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigation } from "../contexts/NavigationContext";
+import { useNavigate } from "react-router-dom";
 import "../styles/HomePage.css";
-
+import NavBar from "../components/NavBar";
 const HomePage = () => {
   const { isAuthenticated, user, loading } = useAuth();
-  const { navigateTo } = useNavigation();
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -18,11 +17,8 @@ const HomePage = () => {
       </div>
     );
   }
-
   return (
     <div className="home-page">
-      <NavBar />
-
       <main className="home-main">
         <div className="home-content">
           <h1>Welcome to MarketLink</h1>
@@ -32,11 +28,11 @@ const HomePage = () => {
               <h2>Hello, {user?.name || "User"}!</h2>
               <p>You are successfully logged in.</p>{" "}
               <div className="user-actions">
-                <button className="btn-primary">Browse Marketplace</button>
+                <button className="btn-primary">Browse Marketplace</button>{" "}
                 <button className="btn-secondary">My Profile</button>
                 <button
                   className="btn-secondary"
-                  onClick={() => navigateTo("test")}
+                  onClick={() => navigate("/test")}
                 >
                   🧪 Test Auth
                 </button>
@@ -50,21 +46,22 @@ const HomePage = () => {
                 marketplace.
               </p>{" "}
               <div className="guest-actions">
+                {" "}
                 <button
                   className="btn-primary"
-                  onClick={() => navigateTo("login")}
+                  onClick={() => navigate("/login")}
                 >
                   Sign In
                 </button>
                 <button
                   className="btn-secondary"
-                  onClick={() => navigateTo("signup")}
+                  onClick={() => navigate("/signup")}
                 >
                   Sign Up
-                </button>
+                </button>{" "}
                 <button
                   className="btn-secondary"
-                  onClick={() => navigateTo("test")}
+                  onClick={() => navigate("/test")}
                 >
                   🧪 Test Auth
                 </button>
