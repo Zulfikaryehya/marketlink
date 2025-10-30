@@ -1,33 +1,69 @@
-import React from "react";
+import React, { useState } from "react";
 import "../styles/NavBar.css";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigation } from "../contexts/NavigationContext";
+import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
   const { isAuthenticated, logout, loading } = useAuth();
-  const { navigateTo } = useNavigation();
+  const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
-    navigateTo("home"); // Navigate to home after logout
+    navigate("/"); // Navigate to home after logout
   };
 
   const handleNavigation = (e, page) => {
     e.preventDefault();
-    navigateTo(page);
+    const routeMap = {
+      home: "/",
+      login: "/login",
+      signup: "/signup",
+      test: "/test",
+      browse: "/browse",
+      about: "/about",
+    };
+    navigate(routeMap[page] || "/");
+    setIsMobileMenuOpen(false); // Close mobile menu on navigation
   };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleMobileLogout = async () => {
+    await logout();
+    navigate("/");
+    setIsMobileMenuOpen(false); // Close mobile menu after logout
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* Logo Section */}
-        <div className="navbar-logo">
+        {/* Logo Section */}{" "}
+        <div
+          className="navbar-logo"
+          onClick={(e) => handleNavigation(e, "home")}
+        >
           <div className="logo-icon">
             <div className="diamond-shape"></div>
           </div>
           <span className="logo-text">MarketLink</span>
-        </div>{" "}
+        </div>
+        {/* Mobile Menu Button */}
+        <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
+          <span
+            className={`hamburger-line ${isMobileMenuOpen ? "open" : ""}`}
+          ></span>
+          <span
+            className={`hamburger-line ${isMobileMenuOpen ? "open" : ""}`}
+          ></span>
+          <span
+            className={`hamburger-line ${isMobileMenuOpen ? "open" : ""}`}
+          ></span>
+        </button>
         {/* Navigation Items */}
-        <div className="navbar-menu">
+        <div className={`navbar-menu ${isMobileMenuOpen ? "mobile-open" : ""}`}>
           <ul className="navbar-nav">
             <li className="nav-item">
               {" "}
@@ -62,6 +98,7 @@ const NavBar = () => {
             <li className="nav-item">
               {!loading && (
                 <>
+                  {" "}
                   {isAuthenticated ? (
                     <button
                       onClick={handleLogout}
@@ -80,9 +117,78 @@ const NavBar = () => {
                   )}
                 </>
               )}
-            </li>
+            </li>{" "}
           </ul>
         </div>
+        {/* Mobile Menu Overlay */}
+        {isMobileMenuOpen && (
+          <div className="mobile-menu-overlay" onClick={toggleMobileMenu}>
+            <div
+              className="mobile-menu-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mobile-menu-header">
+                <div className="mobile-logo">
+                  <div className="logo-icon">
+                    <div className="diamond-shape"></div>
+                  </div>
+                  <span className="logo-text">MarketLink</span>
+                </div>
+                {/* <button
+                  className="close-mobile-menu"
+                  onClick={toggleMobileMenu}
+                >
+                  ×
+                </button> */}
+              </div>
+
+              <nav className="mobile-nav">
+                <a
+                  href="#home"
+                  onClick={(e) => handleNavigation(e, "home")}
+                  className="mobile-nav-link"
+                >
+                  🏠 Home
+                </a>
+                <a
+                  href="#browse"
+                  onClick={(e) => handleNavigation(e, "browse")}
+                  className="mobile-nav-link"
+                >
+                  🔍 Browse
+                </a>
+                <a
+                  href="#about"
+                  onClick={(e) => handleNavigation(e, "about")}
+                  className="mobile-nav-link"
+                >
+                  ℹ️ About
+                </a>
+                <div className="mobile-nav-divider"></div>
+                {!loading && (
+                  <>
+                    {isAuthenticated ? (
+                      <button
+                        onClick={handleMobileLogout}
+                        className="mobile-nav-link logout-mobile"
+                      >
+                        🚪 Logout
+                      </button>
+                    ) : (
+                      <a
+                        href="#login"
+                        onClick={(e) => handleNavigation(e, "login")}
+                        className="mobile-nav-link signin-mobile"
+                      >
+                        🔐 Sign In
+                      </a>
+                    )}
+                  </>
+                )}
+              </nav>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );

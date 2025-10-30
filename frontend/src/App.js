@@ -3,6 +3,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/auth/LoginPage";
 import SignUpPage from "./pages/auth/SignupPage";
 import TestPage from "./pages/TestPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import { AuthProvider } from "./contexts/AuthContext";
 import {
   NavigationProvider,
@@ -12,7 +13,6 @@ import {
 
 function AppContent() {
   const { currentPage } = useNavigation();
-
   const renderPage = () => {
     switch (currentPage) {
       case "login":
@@ -21,6 +21,9 @@ function AppContent() {
         return <SignUpPage />;
       case "test":
         return <TestPage />;
+      case "404":
+      case "not-found":
+        return <NotFoundPage />;
       default:
         return <HomePage />;
     }

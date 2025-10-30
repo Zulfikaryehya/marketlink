@@ -1,21 +1,18 @@
 import React from "react";
-import NavBar from "../components/NavBar";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigation } from "../contexts/NavigationContext";
+import { useNavigate } from "react-router-dom";
 import "../styles/TestPage.css";
 
 const TestPage = () => {
   const { isAuthenticated, user, loading, logout } = useAuth();
-  const { navigateTo } = useNavigation();
+  const navigate = useNavigate();
 
   const handleQuickLogout = async () => {
     await logout();
   };
-
   if (loading) {
     return (
       <div className="test-page">
-        <NavBar />
         <main className="test-main">
           <div className="loading">Loading authentication state...</div>
         </main>
@@ -25,8 +22,6 @@ const TestPage = () => {
 
   return (
     <div className="test-page">
-      <NavBar />
-
       <main className="test-main">
         <div className="test-container">
           <h1>🧪 Authentication Test Page</h1>
@@ -62,19 +57,19 @@ const TestPage = () => {
             <div className="button-grid">
               <button
                 className="test-btn primary"
-                onClick={() => navigateTo("home")}
+                onClick={() => navigate("/")}
               >
                 🏠 Go to Home
               </button>
               <button
                 className="test-btn secondary"
-                onClick={() => navigateTo("login")}
+                onClick={() => navigate("/login")}
               >
                 🔐 Go to Login
               </button>
               <button
                 className="test-btn secondary"
-                onClick={() => navigateTo("signup")}
+                onClick={() => navigate("/signup")}
               >
                 📝 Go to Sign Up
               </button>
