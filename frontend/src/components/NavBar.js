@@ -20,7 +20,7 @@ const NavBar = () => {
       login: "/login",
       signup: "/signup",
       test: "/test",
-      browse: "/browse",
+      browse: "/listings",
       about: "/about",
     };
     navigate(routeMap[page] || "/");

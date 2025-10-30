@@ -3,6 +3,11 @@ import SignupPage from "./pages/auth/SignupPage";
 import LoginPage from "./pages/auth/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import TestPage from "./pages/TestPage";
+import ListingsPage from "./pages/ListingsPage";
+import CreateListingPage from "./pages/CreateListingPage";
+import ListingDetailPage from "./pages/ListingDetailPage";
+import EditListingPage from "./pages/EditListingPage";
+import ListingApiTestPage from "./pages/ListingApiTestPage";
 import Layout from "./components/Layout";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -38,6 +43,46 @@ const router = createBrowserRouter([
     element: (
       <Layout>
         <TestPage />
+      </Layout>
+    ),
+  },
+  {
+    path: "/listings",
+    element: (
+      <Layout>
+        <ListingsPage />
+      </Layout>
+    ),
+  },
+  {
+    path: "/listings/create",
+    element: (
+      <Layout>
+        <CreateListingPage />
+      </Layout>
+    ),
+  },
+  {
+    path: "/listings/:id",
+    element: (
+      <Layout>
+        <ListingDetailPage />
+      </Layout>
+    ),
+  },
+  {
+    path: "/listings/:id/edit",
+    element: (
+      <Layout>
+        <EditListingPage />
+      </Layout>
+    ),
+  },
+  {
+    path: "/api-test",
+    element: (
+      <Layout>
+        <ListingApiTestPage />
       </Layout>
     ),
   },
