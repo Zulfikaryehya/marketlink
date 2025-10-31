@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-
 import "../../styles/SignupPage.css";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../services/api";
+import toast from "react-hot-toast";
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -82,32 +82,66 @@ const SignupPage = () => {
       // Store returned token if provided (your current backend doesn't return a token)
       if (data.token) {
         localStorage.setItem("token", data.token);
-      }
-
-      // Store user information (stringified) for quick access in the UI
+      } // Store user information (stringified) for quick access in the UI
       localStorage.setItem("user", JSON.stringify(data)); // Inform the user that registration succeeded
-      alert("Registration successful! Your account has been created.");
+      toast.success("Registration successful! Your account has been created.", {
+        duration: 4000,
+        position: "top-center",
+        style: {
+          background: "#10b981",
+          color: "white",
+          fontWeight: "500",
+        },
+      });
       console.log("Registration successful:", data); // Navigate to login page after successful registration
       navigate("/login");
     } catch (error) {
       // Log the error for debugging
-      console.error("Registration error:", error);
-
-      // Handle different types of errors
+      console.error("Registration error:", error); // Handle different types of errors
       if (error.message.includes("Cannot connect to server")) {
+        const errorMsg =
+          "Cannot connect to server. Make sure your Laravel backend is running on http://localhost:8000";
         setErrors({
-          general:
-            "Cannot connect to server. Make sure your Laravel backend is running on http://localhost:8000",
+          general: errorMsg,
+        });
+        toast.error(errorMsg, {
+          duration: 5000,
+          position: "top-center",
+          style: {
+            background: "#ef4444",
+            color: "white",
+            fontWeight: "500",
+          },
         });
       } else if (
         error.message.includes("validation") ||
         error.message.includes("required")
       ) {
         setErrors({ general: error.message });
+        toast.error(error.message, {
+          duration: 4000,
+          position: "top-center",
+          style: {
+            background: "#ef4444",
+            color: "white",
+            fontWeight: "500",
+          },
+        });
       } else {
         // Otherwise show the error message or a generic fallback
+        const errorMsg =
+          error.message || "Registration failed. Please try again.";
         setErrors({
-          general: error.message || "Registration failed. Please try again.",
+          general: errorMsg,
+        });
+        toast.error(errorMsg, {
+          duration: 4000,
+          position: "top-center",
+          style: {
+            background: "#ef4444",
+            color: "white",
+            fontWeight: "500",
+          },
         });
       }
     } finally {

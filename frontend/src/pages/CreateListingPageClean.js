@@ -8,6 +8,7 @@ import ErrorMessage from "../components/listing/ErrorMessage";
 import ImageUploadSection from "../components/listing/ImageUploadSection";
 import ListingFormFields from "../components/listing/ListingFormFields";
 import FormActions from "../components/listing/FormActions";
+import toast from "react-hot-toast";
 import "../styles/CreateListingPage.css";
 
 const CreateListingPage = () => {
@@ -52,13 +53,30 @@ const CreateListingPage = () => {
         selectedImages.length > 0
           ? await listingApi.createWithImages(formData, selectedImages)
           : await listingApi.create(formData);
-
       if (result.success) {
         // Clean up image previews
         imagePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+        toast.success("Listing created successfully!", {
+          duration: 4000,
+          position: "top-center",
+          style: {
+            background: "#10b981",
+            color: "white",
+            fontWeight: "500",
+          },
+        });
         navigate("/listings");
       } else {
         setError(result.error || "Failed to create listing");
+        toast.error("Failed to create listing", {
+          duration: 4000,
+          position: "top-center",
+          style: {
+            background: "#ef4444",
+            color: "white",
+            fontWeight: "500",
+          },
+        });
       }
     } catch (error) {
       console.error("Error creating listing:", error);

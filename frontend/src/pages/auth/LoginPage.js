@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../../styles/LoginPage.css";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -65,10 +66,17 @@ const LoginPage = () => {
     try {
       // Use the AuthContext login method
       const result = await login(formData);
-
       if (result.success) {
         // Login successful - the AuthContext handles token storage and state updates
-        alert("Login successful! You are now signed in.");
+        toast.success("Login successful! Welcome back!", {
+          duration: 4000,
+          position: "top-center",
+          style: {
+            background: "#10b981",
+            color: "white",
+            fontWeight: "500",
+          },
+        });
         console.log("Login successful:", result.data);
 
         // Navigate to home page after successful login
@@ -76,42 +84,93 @@ const LoginPage = () => {
       } else {
         // Login failed - show error message
         setErrors({ general: result.error });
+        toast.error(result.error || "Login failed. Please try again.", {
+          duration: 4000,
+          position: "top-center",
+          style: {
+            background: "#ef4444",
+            color: "white",
+            fontWeight: "500",
+          },
+        });
       }
     } catch (error) {
-      console.error("Login error:", error);
-
-      // Handle different types of errors
+      console.error("Login error:", error); // Handle different types of errors
       if (error.message.includes("Cannot connect to server")) {
+        const errorMsg =
+          "Cannot connect to server. Make sure your Laravel backend is running.";
         setErrors({
-          general:
-            "Cannot connect to server. Make sure your Laravel backend is running.",
+          general: errorMsg,
+        });
+        toast.error(errorMsg, {
+          duration: 5000,
+          position: "top-center",
+          style: {
+            background: "#ef4444",
+            color: "white",
+            fontWeight: "500",
+          },
         });
       } else if (
         error.message.includes("Unauthorized") ||
         error.message.includes("Invalid credentials")
       ) {
-        setErrors({ general: "Invalid email or password. Please try again." });
+        const errorMsg = "Invalid email or password. Please try again.";
+        setErrors({ general: errorMsg });
+        toast.error(errorMsg, {
+          duration: 4000,
+          position: "top-center",
+          style: {
+            background: "#ef4444",
+            color: "white",
+            fontWeight: "500",
+          },
+        });
       } else {
+        const errorMsg = error.message || "Login failed. Please try again.";
         setErrors({
-          general: error.message || "Login failed. Please try again.",
+          general: errorMsg,
+        });
+        toast.error(errorMsg, {
+          duration: 4000,
+          position: "top-center",
+          style: {
+            background: "#ef4444",
+            color: "white",
+            fontWeight: "500",
+          },
         });
       }
     } finally {
       setIsLoading(false);
     }
   };
-
   // Handle social login (placeholder functions)
   const handleGoogleLogin = () => {
     // TODO: Implement Google OAuth
     console.log("Google login clicked");
-    alert("Google login not implemented yet");
+    toast("Google login not implemented yet", {
+      duration: 3000,
+      position: "top-center",
+      style: {
+        background: "#f59e0b",
+        color: "white",
+        fontWeight: "500",
+      },
+    });
   };
-
   const handleFacebookLogin = () => {
     // TODO: Implement Facebook OAuth
     console.log("Facebook login clicked");
-    alert("Facebook login not implemented yet");
+    toast("Facebook login not implemented yet", {
+      duration: 3000,
+      position: "top-center",
+      style: {
+        background: "#3b82f6",
+        color: "white",
+        fontWeight: "500",
+      },
+    });
   };
 
   return (

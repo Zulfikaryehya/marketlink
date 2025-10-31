@@ -4,6 +4,7 @@ import { FiEdit, FiTrash2, FiArrowLeft } from "react-icons/fi";
 import { listingApi } from "../services/listingApi";
 import { commentApi } from "../services/commentApi";
 import { useAuth } from "../contexts/AuthContext";
+import toast from "react-hot-toast";
 import "../styles/ListingDetailPage.css";
 
 const ListingDetailPage = () => {
@@ -104,22 +105,80 @@ const ListingDetailPage = () => {
       const result = await commentApi.delete(commentId);
       if (result.success) {
         setComments(comments.filter((comment) => comment.id !== commentId));
+        toast.success("Comment deleted successfully!", {
+          duration: 3000,
+          position: "top-center",
+          style: {
+            background: "#10b981",
+            color: "white",
+            fontWeight: "500",
+          },
+        });
       } else {
         console.error("Failed to delete comment:", result.error);
-        alert(`Error deleting comment: ${result.error}`);
+        toast.error(`Error deleting comment: ${result.error}`, {
+          duration: 4000,
+          position: "top-center",
+          style: {
+            background: "#ef4444",
+            color: "white",
+            fontWeight: "500",
+          },
+        });
       }
     } catch (err) {
       console.error("Failed to delete comment:", err);
-      alert("Failed to delete comment. Please try again.");
+      toast.error("Failed to delete comment. Please try again.", {
+        duration: 4000,
+        position: "top-center",
+        style: {
+          background: "#ef4444",
+          color: "white",
+          fontWeight: "500",
+        },
+      });
     }
   };
   const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this listing?")) {
-      const result = await listingApi.delete(id);
-      if (result.success) {
-        navigate("/listings");
-      } else {
-        alert(`Error: ${result.error}`);
+    if (
+      window.confirm(
+        "Are you sure you want to delete this listing? This action cannot be undone."
+      )
+    ) {
+      try {
+        const result = await listingApi.delete(id);
+        if (result.success) {
+          toast.success("Listing deleted successfully!", {
+            duration: 4000,
+            position: "top-center",
+            style: {
+              background: "#10b981",
+              color: "white",
+              fontWeight: "500",
+            },
+          });
+          navigate("/listings");
+        } else {
+          toast.error(`Failed to delete listing: ${result.error}`, {
+            duration: 4000,
+            position: "top-center",
+            style: {
+              background: "#ef4444",
+              color: "white",
+              fontWeight: "500",
+            },
+          });
+        }
+      } catch (error) {
+        toast.error("An error occurred while deleting the listing", {
+          duration: 4000,
+          position: "top-center",
+          style: {
+            background: "#ef4444",
+            color: "white",
+            fontWeight: "500",
+          },
+        });
       }
     }
   };

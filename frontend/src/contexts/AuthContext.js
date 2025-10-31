@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { api } from "../services/api";
+import toast from "react-hot-toast";
 
 // Create a context object to hold auth state and actions
 const AuthContext = createContext();
@@ -119,8 +120,7 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: "SET_LOADING", payload: false });
       return { success: false, error: error.message };
     }
-  };
-  // logout action that calls API and clears state/localStorage
+  }; // logout action that calls API and clears state/localStorage
   const logout = async () => {
     try {
       // Attempt server-side logout if token exists
@@ -128,8 +128,27 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         await api.logout();
       }
+
+      toast.success("Logged out successfully!", {
+        duration: 3000,
+        position: "top-center",
+        style: {
+          background: "#10b981",
+          color: "white",
+          fontWeight: "500",
+        },
+      });
     } catch (error) {
       console.log("Server logout failed:", error);
+      toast.success("Logged out successfully!", {
+        duration: 3000,
+        position: "top-center",
+        style: {
+          background: "#10b981",
+          color: "white",
+          fontWeight: "500",
+        },
+      });
     } finally {
       // Clear local auth state regardless of server response
       localStorage.removeItem("token");

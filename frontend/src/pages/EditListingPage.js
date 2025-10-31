@@ -9,6 +9,7 @@ import ImageUploadSection from "../components/listing/ImageUploadSection";
 import ListingFormFields from "../components/listing/ListingFormFields";
 import FormActions from "../components/listing/FormActions";
 import LoadingSpinner from "../components/listing/LoadingSpinner";
+import toast from "react-hot-toast";
 import "../styles/CreateListingPage.css";
 
 const EditListingPage = () => {
@@ -100,13 +101,30 @@ const EditListingPage = () => {
         selectedImages.length > 0
           ? await listingApi.updateWithImages(id, formData, selectedImages)
           : await listingApi.update(id, formData);
-
       if (result.success) {
         // Clean up image previews
         imagePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+        toast.success("Listing updated successfully!", {
+          duration: 4000,
+          position: "top-center",
+          style: {
+            background: "#10b981",
+            color: "white",
+            fontWeight: "500",
+          },
+        });
         navigate(`/listings/${id}`);
       } else {
         setError(result.error || "Failed to update listing");
+        toast.error("Failed to update listing", {
+          duration: 4000,
+          position: "top-center",
+          style: {
+            background: "#ef4444",
+            color: "white",
+            fontWeight: "500",
+          },
+        });
       }
     } catch (error) {
       console.error("Error updating listing:", error);
