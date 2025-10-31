@@ -18,19 +18,21 @@ class ListingController extends Controller
         return response()->json($listings);
     }
 
+
     /**
      * Store a new listing
      */
     public function store(Request $request)
     {
+        $mainCategories = ['Electronics', 'Fashion & Apparel', 'Home & Furniture', 'Vehicles', 'Books & Education'];
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'images' => 'nullable|array',      // must be an array of URLs
-            'images.*' => 'string|url',        // each one must be a URL
+            'images' => 'nullable|array',
+            'images.*' => 'string|url',
+            'category' => 'required|string|in:' . implode(',', $mainCategories),
         ]);
-
         // For learning, you can set user manually if not using auth
         $userId = Auth::id();
 
@@ -58,14 +60,15 @@ class ListingController extends Controller
      */
     public function update(Request $request, Listing $listing)
     {
+        $mainCategories = ['Electronics', 'Fashion & Apparel', 'Home & Furniture', 'Vehicles', 'Books & Education'];
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
             'price' => 'sometimes|numeric|min:0',
             'images' => 'nullable|array',
             'images.*' => 'string|url',
+            'category' => 'sometimes|string|in:' . implode(',', $mainCategories),
         ]);
-
         $listing->update($validated);
 
         return response()->json([

@@ -1,88 +1,235 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { listingApi } from "../services/listingApi";
 import "../styles/HomePage.css";
-import NavBar from "../components/NavBar";
-const HomePage = () => {
-  const { isAuthenticated, user, loading } = useAuth();
-  const navigate = useNavigate();
 
-  if (loading) {
+const HomePage = () => {
+  const { isAuthenticated, user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchListings();
+  }, []);
+
+  const fetchListings = async () => {
+    setLoading(true);
+    try {
+      const result = await listingApi.getAll();
+      if (result.success) {
+        setListings(result.data);
+        setError(null);
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError("Failed to load listings");
+    } finally {
+      setLoading(false);
+    }
+  };
+  if (loading || authLoading) {
     return (
       <div className="home-page">
-        <NavBar />
         <main className="home-main">
-          <div className="loading">Loading...</div>
+          <div className="loading">Loading MarketLink...</div>
         </main>
       </div>
     );
   }
+
   return (
     <div className="home-page">
       <main className="home-main">
-        <div className="home-content">
-          <h1>Welcome to MarketLink</h1>
+        {/* Hero Section */}
+        <div className="hero-section">
+          <div className="hero-content">
+            <h1>Welcome to MarketLink</h1>
+            <p className="hero-subtitle">
+              {isAuthenticated
+                ? `Hello ${
+                    user?.name || "User"
+                  }! Discover amazing items in our marketplace.`
+                : "Your marketplace connection platform - Buy, sell, and discover amazing items."}
+            </p>
 
-          {isAuthenticated ? (
-            <div className="welcome-user">
-              <h2>Hello, {user?.name || "User"}!</h2>
-              <p>You are successfully logged in.</p>{" "}
-              <div className="user-actions">
-                <button className="btn-primary">Browse Marketplace</button>{" "}
-                <button className="btn-secondary">My Profile</button>
+            <div className="hero-actions">
+              {isAuthenticated ? (
                 <button
-                  className="btn-secondary"
-                  onClick={() => navigate("/test")}
+                  className="btn-primary hero-btn"
+                  onClick={() => navigate("/listings/create")}
                 >
-                  🧪 Test Auth
+                  ➕ Sell Something
                 </button>
-              </div>
+              ) : (
+                <div className="auth-buttons">
+                  <button
+                    className="btn-primary hero-btn"
+                    onClick={() => navigate("/signup")}
+                  >
+                    Join MarketLink
+                  </button>
+                  <button
+                    className="btn-secondary hero-btn"
+                    onClick={() => navigate("/login")}
+                  >
+                    Sign In
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Listings Section */}
+        <div className="listings-section">
+          <div className="section-header">
+            <h2>🛍️ Latest Listings</h2>
+            <div className="header-actions">
+              <button onClick={fetchListings} className="refresh-btn">
+                🔄 Refresh
+              </button>
+              {isAuthenticated && (
+                <button
+                  onClick={() => navigate("/listings/create")}
+                  className="create-btn"
+                >
+                  ➕ Add Listing
+                </button>
+              )}
+            </div>
+          </div>
+          {error && (
+            <div className="error-message">
+              <p>❌ {error}</p>
+              <button onClick={fetchListings} className="retry-btn">
+                Try Again
+              </button>
+            </div>
+          )}{" "}
+          {listings.length === 0 && !error ? (
+            <div className="no-listings">
+              <h3>🔍 No listings found</h3>
+              <p>Be the first to create a listing!</p>
+              {isAuthenticated && (
+                <button
+                  onClick={() => navigate("/listings/create")}
+                  className="btn-primary"
+                >
+                  Create First Listing
+                </button>
+              )}
             </div>
           ) : (
-            <div className="welcome-guest">
-              <h2>Your marketplace connection platform</h2>
-              <p>
-                Sign in to access all features and start connecting with the
-                marketplace.
-              </p>{" "}
-              <div className="guest-actions">
-                {" "}
+            <div className="listings-grid">
+              {listings.slice(0, 15).map((listing) => (
+                <div
+                  key={listing.id}
+                  className="listing-card"
+                  onClick={() => navigate(`/listings/${listing.id}`)}
+                >
+                  {/* Image Display */}
+                  {listing.images && listing.images.length > 0 ? (
+                    <div className="listing-image">
+                      <img
+                        src={listing.images[0]}
+                        alt={listing.title}
+                        loading="lazy"
+                      />
+                      {listing.images.length > 1 && (
+                        <div className="image-count">
+                          +{listing.images.length - 1} more
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="listing-no-image">
+                      <span>📷 No Image</span>
+                    </div>
+                  )}
+
+                  <div className="listing-content">
+                    <h3 className="listing-title">{listing.title}</h3>
+                    <p className="listing-description">
+                      {listing.description.length > 80
+                        ? listing.description.substring(0, 80) + "..."
+                        : listing.description}
+                    </p>
+
+                    <div className="listing-details">
+                      <div className="listing-price">${listing.price}</div>
+                      <div className="listing-meta">
+                        <span className="listing-category">
+                          {listing.category}
+                        </span>
+                        <span className="listing-condition">
+                          {listing.condition}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="listing-footer">
+                      <span className="listing-date">
+                        {new Date(listing.created_at).toLocaleDateString()}
+                      </span>
+                      {isAuthenticated && (
+                        <div className="listing-actions">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/listings/${listing.id}/edit`);
+                            }}
+                            className="edit-btn"
+                          >
+                            ✏️
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}{" "}
+            </div>
+          )}
+          {/* View All Button */}
+          {listings.length > 15 && (
+            <div className="view-all-section">
+              <button
+                onClick={() => navigate("/listings")}
+                className="view-all-btn"
+              >
+                View All Listings ({listings.length} total)
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Call to Action Section */}
+        {!isAuthenticated && listings.length > 0 && (
+          <div className="cta-section">
+            <div className="cta-content">
+              <h3>Ready to start selling?</h3>
+              <p>Join thousands of users buying and selling on MarketLink</p>
+              <div className="cta-buttons">
                 <button
+                  onClick={() => navigate("/signup")}
                   className="btn-primary"
+                >
+                  Create Account
+                </button>
+                <button
                   onClick={() => navigate("/login")}
+                  className="btn-secondary"
                 >
                   Sign In
                 </button>
-                <button
-                  className="btn-secondary"
-                  onClick={() => navigate("/signup")}
-                >
-                  Sign Up
-                </button>{" "}
-                <button
-                  className="btn-secondary"
-                  onClick={() => navigate("/test")}
-                >
-                  🧪 Test Auth
-                </button>
               </div>
             </div>
-          )}
-
-          <div className="auth-status">
-            <p>
-              <strong>Auth Status:</strong>{" "}
-              {isAuthenticated ? "Logged In" : "Not Logged In"}
-            </p>
-            {user && (
-              <div>
-                <p>
-                  <strong>User:</strong> {user.name} ({user.email})
-                </p>
-              </div>
-            )}
           </div>
-        </div>
+        )}
       </main>
     </div>
   );

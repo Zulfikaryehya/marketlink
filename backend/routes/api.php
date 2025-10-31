@@ -17,12 +17,12 @@ Route::group([
 });
 
 
-Route::apiResource('listings', ListingController::class)->middleware('auth:api');
-// Route::get('/listings', [ListingController::class, 'index']);       // GET all listings
-// Route::post('/listings', [ListingController::class, 'store']);      // POST create new listing
-// Route::get('/listings/{listing}', [ListingController::class, 'show']); // GET single listing
-// Route::put('/listings/{listing}', [ListingController::class, 'update']); // PUT update listing
-// Route::delete('/listings/{listing}', [ListingController::class, 'destroy']); // DELETE listing
+// Route::apiResource('listings', ListingController::class)->middleware('auth:api');
+Route::get('/listings', [ListingController::class, 'index']);     // GET all listings
+Route::post('/listings', [ListingController::class, 'store'])->middleware('auth:api');;      // POST create new listing
+Route::get('/listings/{listing}', [ListingController::class, 'show']); // GET single listing
+Route::put('/listings/{listing}', [ListingController::class, 'update'])->middleware('auth:api');; // PUT update listing
+Route::delete('/listings/{listing}', [ListingController::class, 'destroy'])->middleware('auth:api');; // DELETE listing
 
 
 

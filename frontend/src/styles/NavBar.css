@@ -1,11 +1,15 @@
-/* NavBar.css */
+/* NavBar.css - Modern MarketLink Navigation */
 .navbar {
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   padding: 0;
   position: sticky;
   top: 0;
   z-index: 1000;
+  transition: all 0.3s ease;
 }
 
 .navbar-container {
@@ -21,28 +25,48 @@
 .navbar-logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0.5rem;
+  border-radius: 12px;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.02);
+  background: rgba(32, 215, 215, 0.05);
 }
 
 .logo-icon {
   position: relative;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
 }
 
 .diamond-shape {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   background: linear-gradient(135deg, #20d7d7 0%, #1db5a6 100%);
   transform: rotate(45deg);
-  border-radius: 3px;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(32, 215, 215, 0.3);
+  transition: all 0.3s ease;
+}
+
+.navbar-logo:hover .diamond-shape {
+  transform: rotate(45deg) scale(1.1);
+  box-shadow: 0 6px 20px rgba(32, 215, 215, 0.4);
 }
 
 .logo-text {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #333333;
+  font-size: 1.6rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #333333 0%, #20d7d7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 /* Navigation Menu */
@@ -78,69 +102,180 @@
   color: #333333;
 }
 
-/* Logout Button */
-.logout-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
+/* Authentication Section */
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 0;
 }
 
-.logout-btn:hover {
-  color: #333333;
+.authenticated-nav,
+.unauthenticated-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Modern Button Base */
+.modern-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.6s;
+}
+
+.modern-btn:hover::before {
+  left: 100%;
+}
+
+/* Profile Button */
+.profile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  position: relative;
+}
+
+.profile-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.profile-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Sign In Button */
+.signin-btn {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+}
+
+.signin-btn:hover {
+  background: linear-gradient(135deg, #2196f3 0%, #21cbf3 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
 }
 
 /* Sign Up Button */
 .signup-btn {
-  background: linear-gradient(135deg, #20d7d7 0%, #1db5a6 100%);
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
   color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(32, 215, 215, 0.2);
+  box-shadow: 0 4px 12px rgba(250, 112, 154, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .signup-btn:hover {
-  background: linear-gradient(135deg, #1db5a6 0%, #17a085 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(32, 215, 215, 0.3);
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(250, 112, 154, 0.4);
+}
+
+/* Logout Button */
+.logout-btn {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #8b4513;
+  box-shadow: 0 4px 12px rgba(252, 182, 159, 0.3);
+}
+
+.logout-btn:hover {
+  background: linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%);
+  color: #d2691e;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(252, 182, 159, 0.4);
+}
+
+/* Button Icons */
+.signin-icon,
+.signup-icon,
+.logout-icon {
+  transition: transform 0.3s ease;
+}
+
+.modern-btn:hover .signin-icon,
+.modern-btn:hover .signup-icon,
+.modern-btn:hover .logout-icon {
+  transform: scale(1.1);
 }
 
 /* Mobile Menu Button */
 .mobile-menu-btn {
   display: none;
   flex-direction: column;
-  background: none;
-  border: none;
+  background: rgba(32, 215, 215, 0.1);
+  border: 2px solid rgba(32, 215, 215, 0.2);
+  border-radius: 8px;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.6rem;
   gap: 4px;
   z-index: 1001;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-btn:hover {
+  background: rgba(32, 215, 215, 0.15);
+  border-color: rgba(32, 215, 215, 0.3);
+  transform: scale(1.05);
 }
 
 .hamburger-line {
-  width: 25px;
+  width: 22px;
   height: 3px;
-  background-color: #333333;
+  background: linear-gradient(135deg, #20d7d7 0%, #1db5a6 100%);
   border-radius: 2px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Hamburger animation when open */
 .hamburger-line.open:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
+  background: linear-gradient(135deg, #1db5a6 0%, #17a085 100%);
 }
 
 .hamburger-line.open:nth-child(2) {
   opacity: 0;
+  transform: scale(0);
 }
 
 .hamburger-line.open:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
+  background: linear-gradient(135deg, #1db5a6 0%, #17a085 100%);
 }
 
 /* Mobile Menu Overlay */
@@ -150,48 +285,65 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(32, 215, 215, 0.1) 100%
+  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 100000;
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
+    backdrop-filter: blur(0px);
   }
   to {
     opacity: 1;
+    backdrop-filter: blur(8px);
   }
 }
 
 .mobile-menu-content {
-  background-color: #ffffff;
-  width: 280px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  width: 320px;
   height: 100%;
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-  animation: slideIn 0.3s ease;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
+  border-left: 1px solid rgba(32, 215, 215, 0.2);
 }
 
 @keyframes slideIn {
   from {
     transform: translateX(100%);
+    opacity: 0;
   }
   to {
     transform: translateX(0);
+    opacity: 1;
   }
 }
 
 .mobile-menu-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid #e0e0e0;
-  background: linear-gradient(135deg, #f8fffe 0%, #f0fffe 100%);
+  padding: 2rem 1.5rem;
+  border-bottom: 1px solid rgba(32, 215, 215, 0.2);
+  background: linear-gradient(
+    135deg,
+    rgba(32, 215, 215, 0.05) 0%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
 }
 
 .mobile-logo {
@@ -255,33 +407,68 @@
   margin: 0.5rem 1.5rem;
 }
 
+/* Mobile Authentication Buttons */
 .signin-mobile {
-  color: #1db5a6 !important;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white !important;
   font-weight: 600;
+  border-radius: 12px;
+  margin: 0.5rem 1rem;
+  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
 }
 
 .signin-mobile:hover {
-  background-color: #f0fffe !important;
+  background: linear-gradient(135deg, #2196f3 0%, #21cbf3 100%) !important;
+  color: white !important;
+  transform: translateX(4px);
+}
+
+.signup-mobile {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  color: white !important;
+  font-weight: 600;
+  border-radius: 12px;
+  margin: 0.25rem 1rem 0.5rem 1rem;
+  box-shadow: 0 4px 12px rgba(250, 112, 154, 0.3);
+}
+
+.signup-mobile:hover {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+  color: white !important;
+  transform: translateX(4px);
+}
+
+.profile-mobile {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+  font-weight: 600;
+  border-radius: 12px;
+  margin: 0.5rem 1rem 0.25rem 1rem;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.profile-mobile:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+  color: white !important;
+  transform: translateX(4px);
 }
 
 .logout-mobile {
-  color: #dc3545 !important;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #8b4513 !important;
+  font-weight: 600;
+  border-radius: 12px;
+  margin: 0.25rem 1rem 0.5rem 1rem;
+  box-shadow: 0 4px 12px rgba(252, 182, 159, 0.3);
 }
 
 .logout-mobile:hover {
-  background-color: #fff5f5 !important;
-  color: #c82333 !important;
+  background: linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%) !important;
+  color: #d2691e !important;
+  transform: translateX(4px);
 }
 
-/* Logo Clickable Style */
-.navbar-logo {
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.navbar-logo:hover {
-  transform: scale(1.05);
-}
+/* Logo Clickable Style - Already defined above */
 
 /* Responsive Design */
 @media (max-width: 1024px) {
@@ -309,6 +496,11 @@
 
   .logo-text {
     font-size: 1.25rem;
+  }
+
+  /* Hide desktop auth buttons on mobile */
+  .auth-section {
+    display: none;
   }
 }
 

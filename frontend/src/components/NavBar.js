@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/NavBar.css";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -8,11 +8,24 @@ const NavBar = () => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Manage body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.classList.add("mobile-menu-open");
+    } else {
+      document.body.classList.remove("mobile-menu-open");
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove("mobile-menu-open");
+    };
+  }, [isMobileMenuOpen]);
+
   const handleLogout = async () => {
     await logout();
     navigate("/"); // Navigate to home after logout
   };
-
   const handleNavigation = (e, page) => {
     e.preventDefault();
     const routeMap = {
@@ -22,6 +35,7 @@ const NavBar = () => {
       test: "/test",
       browse: "/listings",
       about: "/about",
+      profile: "/profile",
     };
     navigate(routeMap[page] || "/");
     setIsMobileMenuOpen(false); // Close mobile menu on navigation
@@ -94,30 +108,81 @@ const NavBar = () => {
               >
                 About
               </a>
-            </li>
-            <li className="nav-item">
+            </li>{" "}
+            <li className="nav-item auth-section">
               {!loading && (
                 <>
-                  {" "}
                   {isAuthenticated ? (
-                    <button
-                      onClick={handleLogout}
-                      className="nav-link logout-btn"
-                    >
-                      Logout
-                    </button>
+                    <div className="authenticated-nav">
+                      <button
+                        onClick={(e) => handleNavigation(e, "profile")}
+                        className="profile-btn"
+                        title="Profile"
+                      >
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
+                          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="logout-btn modern-btn"
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="logout-icon"
+                        >
+                          <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
+                        </svg>
+                        Logout
+                      </button>
+                    </div>
                   ) : (
-                    <a
-                      href="#login"
-                      onClick={(e) => handleNavigation(e, "login")}
-                      className="nav-link"
-                    >
-                      Sign In
-                    </a>
+                    <div className="unauthenticated-nav">
+                      <a
+                        href="#login"
+                        onClick={(e) => handleNavigation(e, "login")}
+                        className="signin-btn modern-btn"
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="signin-icon"
+                        >
+                          <path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z" />
+                        </svg>
+                        Sign In
+                      </a>
+                      <a
+                        href="#signup"
+                        onClick={(e) => handleNavigation(e, "signup")}
+                        className="signup-btn modern-btn"
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="signup-icon"
+                        >
+                          <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+                        Join Now
+                      </a>
+                    </div>
                   )}
                 </>
               )}
-            </li>{" "}
+            </li>
           </ul>
         </div>
         {/* Mobile Menu Overlay */}
@@ -163,25 +228,43 @@ const NavBar = () => {
                   className="mobile-nav-link"
                 >
                   ℹ️ About
-                </a>
+                </a>{" "}
                 <div className="mobile-nav-divider"></div>
                 {!loading && (
                   <>
                     {isAuthenticated ? (
-                      <button
-                        onClick={handleMobileLogout}
-                        className="mobile-nav-link logout-mobile"
-                      >
-                        🚪 Logout
-                      </button>
+                      <>
+                        <a
+                          href="#profile"
+                          onClick={(e) => handleNavigation(e, "profile")}
+                          className="mobile-nav-link profile-mobile"
+                        >
+                          👤 Profile
+                        </a>
+                        <button
+                          onClick={handleMobileLogout}
+                          className="mobile-nav-link logout-mobile"
+                        >
+                          🚪 Logout
+                        </button>
+                      </>
                     ) : (
-                      <a
-                        href="#login"
-                        onClick={(e) => handleNavigation(e, "login")}
-                        className="mobile-nav-link signin-mobile"
-                      >
-                        🔐 Sign In
-                      </a>
+                      <>
+                        <a
+                          href="#login"
+                          onClick={(e) => handleNavigation(e, "login")}
+                          className="mobile-nav-link signin-mobile"
+                        >
+                          🔐 Sign In
+                        </a>
+                        <a
+                          href="#signup"
+                          onClick={(e) => handleNavigation(e, "signup")}
+                          className="mobile-nav-link signup-mobile"
+                        >
+                          ✨ Join Now
+                        </a>
+                      </>
                     )}
                   </>
                 )}

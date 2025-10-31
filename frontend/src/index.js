@@ -7,6 +7,7 @@ import ListingsPage from "./pages/ListingsPage";
 import CreateListingPage from "./pages/CreateListingPage";
 import ListingDetailPage from "./pages/ListingDetailPage";
 import EditListingPage from "./pages/EditListingPage";
+import ProfilePage from "./pages/ProfilePage";
 import Layout from "./components/Layout";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -74,6 +75,14 @@ const router = createBrowserRouter([
     element: (
       <Layout>
         <EditListingPage />
+      </Layout>
+    ),
+  },
+  {
+    path: "/profile",
+    element: (
+      <Layout>
+        <ProfilePage />
       </Layout>
     ),
   },
