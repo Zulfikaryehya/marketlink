@@ -26,6 +26,8 @@ Route::put('/listings/{listing}', [ListingController::class, 'update'])->middlew
 Route::delete('/listings/{listing}', [ListingController::class, 'destroy'])->middleware(['auth:api', 'listing.owner']); // DELETE listing (owner only)
 Route::get('/listings/category/{category}', [ListingController::class, 'getListingsByCategory']); // GET listings by category
 Route::get('/users/{userId}/listings', [ListingController::class, 'getUserListings']); // GET listings by user
+
+
 Route::get('/users/{id}', [UserController::class, 'show']); // GET user profile by ID
 
 

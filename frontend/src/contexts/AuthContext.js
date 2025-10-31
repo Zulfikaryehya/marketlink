@@ -49,43 +49,59 @@ export const AuthProvider = ({ children }) => {
     token: null,
     loading: true,
   });
-
   // On mount, check if user is already logged in
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
+    const userJson = localStorage.getItem("user");
+
+    console.log("AuthContext initialization - Token:", !!token); // Debug logging
+    console.log("AuthContext initialization - User data:", userJson); // Debug logging
 
     if (token) {
-      // If token exists, set as authenticated
-      dispatch({
-        type: "LOGIN_SUCCESS",
-        payload: {
-          token,
-          user: user ? JSON.parse(user) : null,
-        },
-      });
+      try {
+        const user = userJson ? JSON.parse(userJson) : null;
+        // If token exists, set as authenticated
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: {
+            token,
+            user,
+          },
+        });
+        console.log("User restored from localStorage:", user);
+      } catch (error) {
+        console.error("Error parsing user data from localStorage:", error);
+        // Clear corrupted data
+        localStorage.removeItem("user");
+        dispatch({ type: "SET_LOADING", payload: false });
+      }
     } else {
       // No token found, user is not authenticated
       dispatch({ type: "SET_LOADING", payload: false });
     }
-  }, []);
-  // login action that calls API and updates context + localStorage
+  }, []); // login action that calls API and updates context + localStorage
   const login = async (credentials) => {
     try {
       dispatch({ type: "SET_LOADING", payload: true });
       const data = await api.login(credentials);
+
+      console.log("Login API response:", data); // Debug logging
 
       // Store token and user in localStorage for persistence
       if (data.access_token) {
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("token_type", data.token_type || "bearer");
         localStorage.setItem("expires_in", data.expires_in || "3600");
+        console.log("Token saved to localStorage"); // Debug logging
       }
 
       // Store user data in localStorage
       if (data.user) {
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("user_Id", data.user.id); // Store user ID separately for easy access
+        console.log("User data saved to localStorage:", data.user); // Debug logging
+      } else {
+        console.warn("No user data received from login API");
       }
 
       // Update context state with successful login
@@ -99,6 +115,7 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true, data };
     } catch (error) {
+      console.error("Login error in AuthContext:", error);
       dispatch({ type: "SET_LOADING", payload: false });
       return { success: false, error: error.message };
     }

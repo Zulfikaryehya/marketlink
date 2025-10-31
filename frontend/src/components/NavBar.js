@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import "../styles/NavBar.css";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { FaSearch, FaTimes } from "react-icons/fa";
 
 const NavBar = () => {
-  const { user } = useAuth();
-  const userId = user?.id;
-  const { isAuthenticated, logout, loading } = useAuth();
+  const { user, isAuthenticated, logout, loading } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   // Manage body scroll when mobile menu is open
   useEffect(() => {
@@ -46,25 +47,67 @@ const NavBar = () => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
-
   const handleMobileLogout = async () => {
     await logout();
     navigate("/");
     setIsMobileMenuOpen(false); // Close mobile menu after logout
   };
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/listings?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery(""); // Clear search after navigation
+      setIsSearchFocused(false);
+      setIsMobileMenuOpen(false); // Close mobile menu if open
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setIsSearchFocused(false);
+  };
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* Logo Section */}{" "}
+        {" "}
+        {/* Logo Section */}
         <div
           className="navbar-logo"
           onClick={(e) => handleNavigation(e, "home")}
         >
           <div className="logo-icon">
             <div className="diamond-shape"></div>
-          </div>
+          </div>{" "}
           <span className="logo-text">MarketLink</span>
+        </div>
+        {/* Search Bar - Desktop */}
+        <div className="navbar-search">
+          <form onSubmit={handleSearch} className="search-form">
+            <div
+              className={`search-container ${isSearchFocused ? "focused" : ""}`}
+            >
+              <FaSearch className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search listings..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+                className="search-input"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  className="clear-search-btn"
+                >
+                  <FaTimes />
+                </button>
+              )}
+            </div>
+          </form>
         </div>
         {/* Mobile Menu Button */}
         <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
@@ -81,8 +124,8 @@ const NavBar = () => {
         {/* Navigation Items */}
         <div className={`navbar-menu ${isMobileMenuOpen ? "mobile-open" : ""}`}>
           <ul className="navbar-nav">
+            {" "}
             <li className="nav-item">
-              {" "}
               <a
                 href="#home"
                 onClick={(e) => handleNavigation(e, "home")}
@@ -92,7 +135,6 @@ const NavBar = () => {
               </a>
             </li>
             <li className="nav-item">
-              {" "}
               <a
                 href="#browse"
                 onClick={(e) => handleNavigation(e, "browse")}
@@ -100,9 +142,8 @@ const NavBar = () => {
               >
                 Browse
               </a>
-            </li>{" "}
+            </li>
             <li className="nav-item">
-              {" "}
               <a
                 href="#about"
                 onClick={(e) => handleNavigation(e, "about")}
@@ -110,7 +151,7 @@ const NavBar = () => {
               >
                 About
               </a>
-            </li>{" "}
+            </li>
             <li className="nav-item auth-section">
               {!loading && (
                 <>
@@ -194,6 +235,7 @@ const NavBar = () => {
               className="mobile-menu-content"
               onClick={(e) => e.stopPropagation()}
             >
+              {" "}
               <div className="mobile-menu-header">
                 <div className="mobile-logo">
                   <div className="logo-icon">
@@ -201,14 +243,31 @@ const NavBar = () => {
                   </div>
                   <span className="logo-text">MarketLink</span>
                 </div>
-                {/* <button
-                  className="close-mobile-menu"
-                  onClick={toggleMobileMenu}
-                >
-                  ×
-                </button> */}
               </div>
-
+              {/* Mobile Search */}
+              <div className="mobile-search">
+                <form onSubmit={handleSearch} className="mobile-search-form">
+                  <div className="mobile-search-container">
+                    <FaSearch className="mobile-search-icon" />
+                    <input
+                      type="text"
+                      placeholder="Search listings..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="mobile-search-input"
+                    />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={clearSearch}
+                        className="mobile-clear-search-btn"
+                      >
+                        <FaTimes />
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </div>
               <nav className="mobile-nav">
                 <a
                   href="#home"
@@ -229,8 +288,9 @@ const NavBar = () => {
                   onClick={(e) => handleNavigation(e, "about")}
                   className="mobile-nav-link"
                 >
+                  {" "}
                   ℹ️ About
-                </a>{" "}
+                </a>
                 <div className="mobile-nav-divider"></div>
                 {!loading && (
                   <>

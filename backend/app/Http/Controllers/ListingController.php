@@ -112,6 +112,21 @@ class ListingController extends Controller
         return response()->json($listings);
     }
 
+    public function getListingsByPriceRange(Request $request)
+    {
+        $minPrice = $request->query('min', 0);
+        $maxPrice = $request->query('max', PHP_INT_MAX);
+
+        $listings = Listing::whereBetween('price', [$minPrice, $maxPrice])
+            ->with('user')
+            ->latest()
+            ->get();
+
+        return response()->json($listings);
+    }
+
+
+
     /**
      * Get listings by user ID
      */
