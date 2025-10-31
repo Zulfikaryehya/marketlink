@@ -19,12 +19,20 @@ Route::group([
 
 // Route::apiResource('listings', ListingController::class)->middleware('auth:api');
 Route::get('/listings', [ListingController::class, 'index']);     // GET all listings
-Route::post('/listings', [ListingController::class, 'store'])->middleware('auth:api');;      // POST create new listing
+Route::post('/listings', [ListingController::class, 'store'])->middleware('auth:api');      // POST create new listing
 Route::get('/listings/{listing}', [ListingController::class, 'show']); // GET single listing
-Route::put('/listings/{listing}', [ListingController::class, 'update'])->middleware('auth:api');; // PUT update listing
-Route::delete('/listings/{listing}', [ListingController::class, 'destroy'])->middleware('auth:api');; // DELETE listing
-
+Route::put('/listings/{listing}', [ListingController::class, 'update'])->middleware(['auth:api', 'listing.owner']); // PUT update listing (owner only)
+Route::delete('/listings/{listing}', [ListingController::class, 'destroy'])->middleware(['auth:api', 'listing.owner']); // DELETE listing (owner only)
+Route::get('/listings/category/{category}', [ListingController::class, 'getListingsByCategory']); // GET listings by category
 
 
 
 Route::post('/upload-image', [ImageUploadController::class, 'upload']);
+
+
+//for comments
+use App\Http\Controllers\CommentController;
+
+Route::get('listings/{listing}/comments', [CommentController::class, 'index']);
+Route::post('listings/{listing}/comments', [CommentController::class, 'store'])->middleware('auth:api');;
+Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->middleware('auth:api');;

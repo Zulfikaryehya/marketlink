@@ -23,6 +23,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(prepend: [
             HandleCors::class,
         ]);
+
+        // Register custom middleware aliases
+        $middleware->alias([
+            'listing.owner' => \App\Http\Middleware\CheckListingOwnership::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (AuthenticationException $e, Request $request) {

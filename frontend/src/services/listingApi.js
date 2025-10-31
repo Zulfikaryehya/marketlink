@@ -54,7 +54,6 @@ export const listingApi = {
       return { success: false, error: error.message };
     }
   },
-
   // Get single listing by ID from the API
   getById: async (id) => {
     try {
@@ -68,6 +67,35 @@ export const listingApi = {
     } catch (error) {
       // Log error to console for debugging
       console.error("Get listing error:", error);
+      // Return error response with message
+      return { success: false, error: error.message };
+    }
+  },
+  // Get listings by category from the API
+  getByCategory: async (category, excludeId = null, limit = 4) => {
+    try {
+      // Build query parameters for exclude and limit
+      const params = new URLSearchParams();
+      if (excludeId) {
+        params.append("exclude", excludeId);
+      }
+      if (limit) {
+        params.append("limit", limit);
+      }
+
+      // Make GET request to category-specific endpoint
+      const url = `${API_BASE_URL}/listings/category/${encodeURIComponent(
+        category
+      )}${params.toString() ? "?" + params.toString() : ""}`;
+      const response = await axios.get(url, {
+        headers: getAuthHeaders(),
+      });
+
+      // Return success response with data
+      return { success: true, data: response.data };
+    } catch (error) {
+      // Log error to console for debugging
+      console.error("Get listings by category error:", error);
       // Return error response with message
       return { success: false, error: error.message };
     }
@@ -112,7 +140,28 @@ export const listingApi = {
     } catch (error) {
       // Log error to console for debugging
       console.error("Update listing error:", error);
-      // Return error response with message
+
+      // Handle specific HTTP status codes from middleware
+      if (error.response) {
+        const status = error.response.status;
+        const message = error.response.data?.message || error.message;
+
+        switch (status) {
+          case 403:
+            return {
+              success: false,
+              error: "You don't have permission to edit this listing",
+            };
+          case 404:
+            return { success: false, error: "Listing not found" };
+          case 401:
+            return { success: false, error: "Please log in to edit listings" };
+          default:
+            return { success: false, error: message };
+        }
+      }
+
+      // Return generic error message for network issues
       return { success: false, error: error.message };
     }
   },
@@ -129,7 +178,31 @@ export const listingApi = {
     } catch (error) {
       // Log error to console for debugging
       console.error("Delete listing error:", error);
-      // Return error response with message
+
+      // Handle specific HTTP status codes from middleware
+      if (error.response) {
+        const status = error.response.status;
+        const message = error.response.data?.message || error.message;
+
+        switch (status) {
+          case 403:
+            return {
+              success: false,
+              error: "You don't have permission to delete this listing",
+            };
+          case 404:
+            return { success: false, error: "Listing not found" };
+          case 401:
+            return {
+              success: false,
+              error: "Please log in to delete listings",
+            };
+          default:
+            return { success: false, error: message };
+        }
+      }
+
+      // Return generic error message for network issues
       return { success: false, error: error.message };
     }
   },

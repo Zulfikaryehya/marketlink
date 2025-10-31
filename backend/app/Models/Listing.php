@@ -15,7 +15,9 @@ class Listing extends Model
         'description',
         'price',
         'images',
-        'category',  // Add this
+        'category',
+        'condition',
+        'location',
     ];
 
     protected $casts = [
@@ -26,5 +28,10 @@ class Listing extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }

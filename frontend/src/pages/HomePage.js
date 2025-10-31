@@ -2,6 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { listingApi } from "../services/listingApi";
+import {
+  FaCamera,
+  FaPlus,
+  FaSync,
+  FaSearch,
+  FaShoppingBag,
+  FaTimes,
+  FaEdit,
+  FaExclamationCircle,
+  FaUserPlus,
+  FaSignInAlt,
+} from "react-icons/fa";
 import "../styles/HomePage.css";
 
 const HomePage = () => {
@@ -54,15 +66,14 @@ const HomePage = () => {
                     user?.name || "User"
                   }! Discover amazing items in our marketplace.`
                 : "Your marketplace connection platform - Buy, sell, and discover amazing items."}
-            </p>
-
+            </p>{" "}
             <div className="hero-actions">
               {isAuthenticated ? (
                 <button
                   className="btn-primary hero-btn"
                   onClick={() => navigate("/listings/create")}
                 >
-                  ➕ Sell Something
+                  <FaPlus /> Sell Something
                 </button>
               ) : (
                 <div className="auth-buttons">
@@ -70,68 +81,72 @@ const HomePage = () => {
                     className="btn-primary hero-btn"
                     onClick={() => navigate("/signup")}
                   >
-                    Join MarketLink
+                    <FaUserPlus /> Join MarketLink
                   </button>
                   <button
                     className="btn-secondary hero-btn"
                     onClick={() => navigate("/login")}
                   >
-                    Sign In
+                    <FaSignInAlt /> Sign In
                   </button>
                 </div>
               )}
             </div>
           </div>
         </div>
-
-        {/* Listings Section */}
+        {/* Listings Section */}{" "}
         <div className="listings-section">
           <div className="section-header">
-            <h2>🛍️ Latest Listings</h2>
+            <h2>
+              <FaShoppingBag /> Latest Listings
+            </h2>
             <div className="header-actions">
               <button onClick={fetchListings} className="refresh-btn">
-                🔄 Refresh
+                <FaSync /> Refresh
               </button>
               {isAuthenticated && (
                 <button
                   onClick={() => navigate("/listings/create")}
                   className="create-btn"
                 >
-                  ➕ Add Listing
+                  <FaPlus /> Add Listing
                 </button>
               )}
             </div>
-          </div>
+          </div>{" "}
           {error && (
             <div className="error-message">
-              <p>❌ {error}</p>
+              <p>
+                <FaTimes /> {error}
+              </p>
               <button onClick={fetchListings} className="retry-btn">
-                Try Again
+                <FaSync /> Try Again
               </button>
             </div>
           )}{" "}
           {listings.length === 0 && !error ? (
             <div className="no-listings">
-              <h3>🔍 No listings found</h3>
+              <h3>
+                <FaSearch /> No listings found
+              </h3>
               <p>Be the first to create a listing!</p>
               {isAuthenticated && (
                 <button
                   onClick={() => navigate("/listings/create")}
                   className="btn-primary"
                 >
-                  Create First Listing
+                  <FaPlus /> Create First Listing
                 </button>
               )}
             </div>
           ) : (
             <div className="listings-grid">
-              {listings.slice(0, 15).map((listing) => (
+              {listings.slice(0, 10).map((listing) => (
                 <div
                   key={listing.id}
                   className="listing-card"
                   onClick={() => navigate(`/listings/${listing.id}`)}
                 >
-                  {/* Image Display */}
                   {listing.images && listing.images.length > 0 ? (
                     <div className="listing-image">
                       <img
@@ -147,10 +162,10 @@ const HomePage = () => {
                     </div>
                   ) : (
                     <div className="listing-no-image">
-                      <span>📷 No Image</span>
+                      <FaCamera />
+                      <span>No Image</span>
                     </div>
                   )}
-
                   <div className="listing-content">
                     <h3 className="listing-title">{listing.title}</h3>
                     <p className="listing-description">
@@ -174,8 +189,8 @@ const HomePage = () => {
                     <div className="listing-footer">
                       <span className="listing-date">
                         {new Date(listing.created_at).toLocaleDateString()}
-                      </span>
-                      {isAuthenticated && (
+                      </span>{" "}
+                      {isAuthenticated && user?.id === listing.user_id && (
                         <div className="listing-actions">
                           <button
                             onClick={(e) => {
@@ -184,7 +199,7 @@ const HomePage = () => {
                             }}
                             className="edit-btn"
                           >
-                            ✏️
+                            <FaEdit />
                           </button>
                         </div>
                       )}
@@ -193,38 +208,39 @@ const HomePage = () => {
                 </div>
               ))}{" "}
             </div>
-          )}
-          {/* View All Button */}
-          {listings.length > 15 && (
+          )}{" "}
+          {/* Show More Items Button */}
+          {listings.length > 10 && (
             <div className="view-all-section">
               <button
                 onClick={() => navigate("/listings")}
                 className="view-all-btn"
               >
-                View All Listings ({listings.length} total)
+                Show More Items ({listings.length} total)
               </button>
             </div>
           )}
         </div>
-
         {/* Call to Action Section */}
         {!isAuthenticated && listings.length > 0 && (
           <div className="cta-section">
             <div className="cta-content">
               <h3>Ready to start selling?</h3>
-              <p>Join thousands of users buying and selling on MarketLink</p>
+              <p>
+                Join thousands of users buying and selling on MarketLink
+              </p>{" "}
               <div className="cta-buttons">
                 <button
                   onClick={() => navigate("/signup")}
                   className="btn-primary"
                 >
-                  Create Account
+                  <FaUserPlus /> Create Account
                 </button>
                 <button
                   onClick={() => navigate("/login")}
                   className="btn-secondary"
                 >
-                  Sign In
+                  <FaSignInAlt /> Sign In
                 </button>
               </div>
             </div>

@@ -2,9 +2,7 @@ import HomePage from "./pages/HomePage";
 import SignupPage from "./pages/auth/SignupPage";
 import LoginPage from "./pages/auth/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
-import TestPage from "./pages/TestPage";
 import ListingsPage from "./pages/ListingsPage";
-import CreateListingPage from "./pages/CreateListingPage";
 import ListingDetailPage from "./pages/ListingDetailPage";
 import EditListingPage from "./pages/EditListingPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -12,7 +10,7 @@ import Layout from "./components/Layout";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
+import CreateListingPageClean from "./pages/CreateListingPageClean";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -39,14 +37,6 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/test",
-    element: (
-      <Layout>
-        <TestPage />
-      </Layout>
-    ),
-  },
-  {
     path: "/listings",
     element: (
       <Layout>
@@ -58,7 +48,7 @@ const router = createBrowserRouter([
     path: "/listings/create",
     element: (
       <Layout>
-        <CreateListingPage />
+        <CreateListingPageClean />
       </Layout>
     ),
   },

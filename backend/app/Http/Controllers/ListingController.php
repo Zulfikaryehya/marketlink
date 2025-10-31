@@ -24,7 +24,8 @@ class ListingController extends Controller
      */
     public function store(Request $request)
     {
-        $mainCategories = ['Electronics', 'Fashion & Apparel', 'Home & Furniture', 'Vehicles', 'Books & Education'];
+        $mainCategories = ['Electronics', 'Fashion & Apparel', 'Home & Furniture', 'Vehicles', 'Books & Education', 'Sports & Recreation', 'Health & Beauty', 'Collectibles & Art'];
+        $conditions = ['New', 'Like New', 'Good', 'Fair', 'Poor', 'Used'];
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -32,6 +33,8 @@ class ListingController extends Controller
             'images' => 'nullable|array',
             'images.*' => 'string|url',
             'category' => 'required|string|in:' . implode(',', $mainCategories),
+            'condition' => 'required|string|in:' . implode(',', $conditions),
+            'location' => 'nullable|string|max:255',
         ]);
         // For learning, you can set user manually if not using auth
         $userId = Auth::id();
@@ -60,7 +63,8 @@ class ListingController extends Controller
      */
     public function update(Request $request, Listing $listing)
     {
-        $mainCategories = ['Electronics', 'Fashion & Apparel', 'Home & Furniture', 'Vehicles', 'Books & Education'];
+        $mainCategories = ['Electronics', 'Fashion & Apparel', 'Home & Furniture', 'Vehicles', 'Books & Education', 'Sports & Recreation', 'Health & Beauty', 'Collectibles & Art'];
+        $conditions = ['New', 'Like New', 'Good', 'Fair', 'Poor', 'Used'];
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
@@ -68,6 +72,8 @@ class ListingController extends Controller
             'images' => 'nullable|array',
             'images.*' => 'string|url',
             'category' => 'sometimes|string|in:' . implode(',', $mainCategories),
+            'condition' => 'sometimes|string|in:' . implode(',', $conditions),
+            'location' => 'sometimes|nullable|string|max:255',
         ]);
         $listing->update($validated);
 
@@ -85,5 +91,24 @@ class ListingController extends Controller
         $listing->delete();
 
         return response()->json(['message' => 'Listing deleted successfully']);
+    }
+
+    public function getListingsByCategory(Request $request, $category)
+    {
+        $query = Listing::where('category', $category)->with('user');
+
+        // Exclude a specific listing if provided
+        if ($request->has('exclude')) {
+            $query->where('id', '!=', $request->get('exclude'));
+        }
+
+        // Limit results if provided
+        if ($request->has('limit')) {
+            $query->limit((int) $request->get('limit'));
+        }
+
+        $listings = $query->latest()->get();
+
+        return response()->json($listings);
     }
 }
