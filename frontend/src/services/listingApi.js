@@ -295,4 +295,23 @@ export const listingApi = {
       return { success: false, error: error.message };
     }
   },
+
+  // Get listings by user ID
+  getUserListings: async (userId) => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/users/${userId}/listings`,
+        {
+          headers: getAuthHeaders(),
+        }
+      );
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error("Error fetching user listings:", error);
+      return {
+        success: false,
+        error: error.response?.data?.message || "Failed to fetch user listings",
+      };
+    }
+  },
 };

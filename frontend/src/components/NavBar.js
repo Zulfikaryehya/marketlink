@@ -4,6 +4,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
+  const { user } = useAuth();
+  const userId = user?.id;
   const { isAuthenticated, logout, loading } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -35,7 +37,7 @@ const NavBar = () => {
       test: "/test",
       browse: "/listings",
       about: "/about",
-      profile: "/profile",
+      profile: `/profile/${user?.id}`, // Fallback to localStorage
     };
     navigate(routeMap[page] || "/");
     setIsMobileMenuOpen(false); // Close mobile menu on navigation

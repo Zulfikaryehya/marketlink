@@ -69,7 +69,6 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: "SET_LOADING", payload: false });
     }
   }, []);
-
   // login action that calls API and updates context + localStorage
   const login = async (credentials) => {
     try {
@@ -81,6 +80,12 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("token_type", data.token_type || "bearer");
         localStorage.setItem("expires_in", data.expires_in || "3600");
+      }
+
+      // Store user data in localStorage
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("user_Id", data.user.id); // Store user ID separately for easy access
       }
 
       // Update context state with successful login
@@ -98,7 +103,6 @@ export const AuthProvider = ({ children }) => {
       return { success: false, error: error.message };
     }
   };
-
   // logout action that calls API and clears state/localStorage
   const logout = async () => {
     try {
@@ -115,6 +119,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("token_type");
       localStorage.removeItem("expires_in");
       localStorage.removeItem("user");
+      localStorage.removeItem("user_Id");
       dispatch({ type: "LOGOUT" });
     }
   };

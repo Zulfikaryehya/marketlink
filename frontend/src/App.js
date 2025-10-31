@@ -1,44 +1,13 @@
 import React from "react";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/auth/LoginPage";
-import SignUpPage from "./pages/auth/SignupPage";
-import TestPage from "./pages/TestPage";
-import NotFoundPage from "./pages/NotFoundPage";
-import { AuthProvider } from "./contexts/AuthContext";
-import {
-  NavigationProvider,
-  useNavigation,
-} from "./contexts/NavigationContext";
-// import "./App.css";
-
-function AppContent() {
-  const { currentPage } = useNavigation();
-  const renderPage = () => {
-    switch (currentPage) {
-      case "login":
-        return <LoginPage />;
-      case "signup":
-        return <SignUpPage />;
-      case "test":
-        return <TestPage />;
-      case "404":
-      case "not-found":
-        return <NotFoundPage />;
-      default:
-        return <HomePage />;
-    }
-  };
-
-  return <div className="App">{renderPage()}</div>;
-}
+// This file is no longer needed since we're using React Router in index.js
+// The routing is now handled directly in index.js with proper React Router setup
 
 function App() {
   return (
-    <AuthProvider>
-      <NavigationProvider>
-        <AppContent />
-      </NavigationProvider>
-    </AuthProvider>
+    <div className="App">
+      {/* This component is not used when using React Router in index.js */}
+      <h1>This App component is not used with React Router setup</h1>
+    </div>
   );
 }
 

@@ -111,4 +111,17 @@ class ListingController extends Controller
 
         return response()->json($listings);
     }
+
+    /**
+     * Get listings by user ID
+     */
+    public function getUserListings($userId)
+    {
+        $listings = Listing::where('user_id', $userId)
+            ->with('user')
+            ->latest()
+            ->get();
+
+        return response()->json($listings);
+    }
 }

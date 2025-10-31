@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\ImageUploadController;
+use App\Http\Controllers\UserController;
 
 Route::group([
     'middleware' => 'api',
@@ -24,6 +25,8 @@ Route::get('/listings/{listing}', [ListingController::class, 'show']); // GET si
 Route::put('/listings/{listing}', [ListingController::class, 'update'])->middleware(['auth:api', 'listing.owner']); // PUT update listing (owner only)
 Route::delete('/listings/{listing}', [ListingController::class, 'destroy'])->middleware(['auth:api', 'listing.owner']); // DELETE listing (owner only)
 Route::get('/listings/category/{category}', [ListingController::class, 'getListingsByCategory']); // GET listings by category
+Route::get('/users/{userId}/listings', [ListingController::class, 'getUserListings']); // GET listings by user
+Route::get('/users/{id}', [UserController::class, 'show']); // GET user profile by ID
 
 
 

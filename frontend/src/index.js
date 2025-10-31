@@ -11,6 +11,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import CreateListingPageClean from "./pages/CreateListingPageClean";
+import { AuthProvider } from "./contexts/AuthContext";
+import { Toaster } from "react-hot-toast";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -76,6 +78,14 @@ const router = createBrowserRouter([
       </Layout>
     ),
   },
+  {
+    path: "/profile/:userId",
+    element: (
+      <Layout>
+        <ProfilePage />
+      </Layout>
+    ),
+  },
 
   {
     path: "*",
@@ -90,6 +100,9 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+      <Toaster />
+    </AuthProvider>
   </React.StrictMode>
 );

@@ -160,10 +160,12 @@ const ListingDetailPage = () => {
                     src={listing.images[selectedImageIndex]}
                     alt={listing.title}
                     className="main-image"
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/400x300";
+                    }}
                   />
                 </div>
 
-                {/* Image Thumbnails */}
                 {listing.images.length > 1 && (
                   <div className="image-thumbnails">
                     {listing.images.map((image, index) => (
@@ -175,6 +177,9 @@ const ListingDetailPage = () => {
                           index === selectedImageIndex ? "active" : ""
                         }`}
                         onClick={() => setSelectedImageIndex(index)}
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/80x80";
+                        }}
                       />
                     ))}
                   </div>
@@ -224,29 +229,31 @@ const ListingDetailPage = () => {
             <div className="seller-section">
               <div className="seller-header">
                 <div className="seller-avatar">
-                  <span>
-                    {listing.seller?.name?.charAt(0) ||
-                      user?.name?.charAt(0) ||
-                      "S"}
-                  </span>
+                  <span>{listing.user?.name?.charAt(0) || "U"}</span>
                 </div>
                 <div className="seller-info">
                   <p className="seller-label">Sold by</p>
-                  <p className="seller-name">
-                    {listing.seller?.name || user?.name || "Seller"}
-                  </p>
-                  <div className="seller-rating">
-                    <span>⭐⭐⭐⭐⭐</span>
-                    <span className="reviews-count">(0% reviews)</span>
-                  </div>
+                  <button
+                    className="seller-name-link"
+                    onClick={() => navigate(`/profile/${listing.user_id}`)}
+                    style={{
+                      cursor: "pointer",
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      fontSize: "20px",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    {listing.user?.name || "Unknown User"}
+                  </button>
                 </div>
               </div>
             </div>
-            {/* Action Buttons */}
             <div className="action-buttons">
               <button className="btn-add-to-cart">Add to Cart</button>
               <button className="btn-chat-seller">Chat with Seller</button>
-            </div>{" "}
+            </div>
             {/* Admin Actions - Only show for listing owner */}
             {isAuthenticated && user?.id === listing.user_id && (
               <div className="admin-actions">
@@ -262,22 +269,20 @@ const ListingDetailPage = () => {
               </div>
             )}
           </div>
-        </div>
+        </div>{" "}
         {/* About the Seller Section
         <div className="about-seller-section">
           <h3>About the Seller</h3>
           <div className="seller-details">
             <div className="seller-avatar-large">
               <span>
-                {listing.seller?.name?.charAt(0) ||
-                  user?.name?.charAt(0) ||
-                  "S"}
+                {listing.user?.name?.charAt(0) || "S"}
               </span>
             </div>
             <div className="seller-description">
-              <h4>{listing.seller?.name || user?.name || "Seller"}</h4>
+              <h4>{listing.user?.name || "Seller"}</h4>
               <p className="seller-location">
-                {listing.seller?.location || "San Francisco, CA"}
+                {listing.location || "Location not specified"}
               </p>
               <div className="seller-stats">
                 <span>⭐⭐⭐⭐⭐ (0% reviews)</span>
